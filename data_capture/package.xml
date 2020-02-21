@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>data_capture</name>
+  <version>0.0.0</version>
+
+  <description>The data_capture package</description>
+
+  <maintainer email="audrow.nash@gmail.com">Audrow Nash</maintainer>
+
+  <license>MIT</license>
+</package>
