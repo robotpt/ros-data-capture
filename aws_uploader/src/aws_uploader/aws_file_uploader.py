@@ -3,13 +3,23 @@
 import logging
 import boto3
 import os
+import time
 
 from botocore.exceptions import ClientError
 
 
+class FileBeingWrittenToError(Exception):
+    pass
+
+
 class AwsFileUploader:
 
-    def __init__(self, region, default_bucket=None):
+    def __init__(
+            self,
+            region,
+            default_bucket=None,
+            seconds_delay_to_check_if_file_is_being_written=0.1,
+    ):
 
         self._default_region = region
         self._s3_client = boto3.client('s3', region_name=self._default_region)
@@ -20,12 +30,14 @@ class AwsFileUploader:
         self._create_bucket_if_doesnt_exist(default_bucket, self._default_region)
         self._default_bucket = default_bucket
 
+        self._seconds_delay_to_check_if_file_is_being_written = seconds_delay_to_check_if_file_is_being_written
+
     # Note: overrides all files with the same name
     def upload_directory_contents_to_aws_directory(
             self,
             directory_path,
             bucket_name=None,
-            is_remove_file_on_success=True,
+            is_remove_file_on_upload=True,
     ):
 
         if os.path.abspath(directory_path) == os.getcwd():
@@ -34,13 +46,20 @@ class AwsFileUploader:
             raise IOError("Directory selected cannot have other directories in it: '{}'".format(directory_path))
 
         file_names = os.listdir(directory_path)
+        uploaded_files = []
+        not_uploaded_files = []
         for file_name in file_names:
             file_path = os.path.join(directory_path, file_name)
-            self.upload_file(
-                file_path,
-                bucket_name=bucket_name,
-                is_remove_file_on_success=is_remove_file_on_success,
-            )
+            try:
+                self.upload_file(
+                    file_path,
+                    bucket_name=bucket_name,
+                    is_remove_file_on_upload=is_remove_file_on_upload,
+                )
+                uploaded_files.append(file_name)
+            except FileBeingWrittenToError:
+                not_uploaded_files.append(file_name)
+        return uploaded_files, not_uploaded_files
 
     @staticmethod
     def _is_parent_directory(path):
@@ -49,7 +68,7 @@ class AwsFileUploader:
                 return True
         return False
 
-    def upload_file(self, file_path, bucket_name=None, is_remove_file_on_success=False):
+    def upload_file(self, file_path, bucket_name=None, is_remove_file_on_upload=False):
 
         if bucket_name is None:
             bucket_name = self._default_bucket
@@ -57,15 +76,26 @@ class AwsFileUploader:
         if not os.path.exists(file_path):
             raise ReferenceError("No file '{}' exists".format(file_path))
 
+        if self._is_file_being_written_to(file_path):
+            raise FileBeingWrittenToError
+
         try:
             self._s3_client.upload_file(file_path, bucket_name, os.path.basename(file_path))
         except ClientError:
             logging.error("Failed to upload '{}'".format(file_path))
         else:
             logging.info("Successfully uploaded '{}'".format(file_path))
-            if is_remove_file_on_success:
+            if is_remove_file_on_upload:
                 os.remove(file_path)
                 logging.info("Deleted file after successful upload: '{}'".format(file_path))
+
+    def _is_file_being_written_to(self, file_path):
+
+        initial_file_size = os.stat(file_path).st_size
+        time.sleep(self._seconds_delay_to_check_if_file_is_being_written)
+        new_file_size = os.stat(file_path).st_size
+
+        return initial_file_size != new_file_size
 
     def get_bucket_names(self):
         return [bucket[u'Name'] for bucket in self._s3_client.list_buckets()[u'Buckets']]
@@ -132,5 +162,5 @@ if __name__ == '__main__':
     with open(file_path_, 'w') as f:
         f.write("Some content generated at {}".format(datetime.datetime.now().strftime("%H:%M:%S on %Y-%m-%d")))
 
-    aws_uploader.upload_file(file_path_, is_remove_file_on_success=True)
+    aws_uploader.upload_file(file_path_, is_remove_file_on_upload=True)
     os.rmdir(temp_dir)

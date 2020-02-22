@@ -1,0 +1,12 @@
+<launch>
+
+    <arg name="upload_directory_path" default="/root/upload"/>
+    <arg name="bucket_name" default="ros-bucket-128947294807"/>
+
+    <rosparam file="$(find aws_uploader)/config/config.yaml" command="load" />
+
+    <node pkg="aws_uploader" type="directory_uploader.py" name="directory_uploader" output="screen"
+        args="$(arg upload_directory_path) $(arg bucket_name)"
+    />
+
+</launch>

@@ -1,0 +1,6 @@
+aws:
+  region_name: us-west-1
+uploader:
+  is_remove_file_on_upload: true
+  is_create_directory_if_doesnt_exist: true
+  seconds_delay_to_check_if_file_is_being_written: 0.1

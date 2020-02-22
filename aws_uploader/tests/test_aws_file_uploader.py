@@ -5,7 +5,7 @@ import mock
 import os
 import datetime
 
-from aws_uploader.aws_file_uploader import AwsFileUploader
+from aws_uploader.aws_file_uploader import AwsFileUploader, FileBeingWrittenToError
 
 
 PKG = 'aws_uploader'
@@ -77,9 +77,9 @@ class TestAwsFileUploader(unittest.TestCase):
             f.write("Some content generated at {}".format(datetime.datetime.now().strftime("%H:%M:%S on %Y-%m-%d")))
 
         assert os.path.exists(file_path_)
-        aws_uploader.upload_file(file_path_, is_remove_file_on_success=False)
+        aws_uploader.upload_file(file_path_, is_remove_file_on_upload=False)
         assert os.path.exists(file_path_)
-        aws_uploader.upload_file(file_path_, is_remove_file_on_success=True)
+        aws_uploader.upload_file(file_path_, is_remove_file_on_upload=True)
         assert not os.path.exists(file_path_)
         os.rmdir(temp_dir)
 
@@ -131,14 +131,14 @@ class TestAwsFileUploader(unittest.TestCase):
 
         aws_uploader.upload_directory_contents_to_aws_directory(
             directory_path=temp_dir,
-            is_remove_file_on_success=False
+            is_remove_file_on_upload=False
         )
         assert len(os.listdir(temp_dir)) == num_files
         assert mock_aws_client.upload_file.call_count == num_files
 
         aws_uploader.upload_directory_contents_to_aws_directory(
             directory_path=temp_dir,
-            is_remove_file_on_success=True
+            is_remove_file_on_upload=True
         )
         assert len(os.listdir(temp_dir)) == 0
         assert mock_aws_client.upload_file.call_count == 2*num_files
