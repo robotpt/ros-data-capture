@@ -1,10 +1,15 @@
 <?xml version="1.0"?>
 <package format="2">
+
   <name>aws_uploader</name>
   <version>0.0.0</version>
   <description>The aws_uploader package</description>
   <maintainer email="audrow.nash@gmail.com">Audrow Nash</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>rospy</exec_depend>
+  <test_depend>rostest</test_depend>
+  <test_depend>python-mock</test_depend>
+
 </package>
