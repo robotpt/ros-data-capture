@@ -1,8 +1,10 @@
 <launch>
 
     <arg name="image_topic" default="camera/color/image_raw"/>
+    <arg name="output_directory" default="/root/videos"/>
+
     <rosparam file="$(find video_capture)/config/config.yaml" command="load"/>
     <node pkg="video_capture" type="capture.py" name="video_capture" output="screen"
-        args="--image-topic $(arg image_topic)"/>
+        args="--image-topic $(arg image_topic) --output-directory $(arg output_directory)"/>
 
 </launch>

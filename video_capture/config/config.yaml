@@ -7,4 +7,3 @@ data_capture:
       type: mp4
       frames_per_second: 30.0
       video_dimensions: 480p
-  output_directory_path: /root/videos
