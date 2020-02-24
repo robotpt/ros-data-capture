@@ -79,6 +79,5 @@ class VideoRecorder:
         if not self._is_recording:
             raise RuntimeError("Video recording was not started")
 
-        self._video_writer.release()
         self._video_writer = None
         self._is_recording = False

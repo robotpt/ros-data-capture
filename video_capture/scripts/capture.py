@@ -64,10 +64,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--image-topic', help='The image topic for the program to subscribe to',
                         default="camera/color/image_raw")
+    parser.add_argument('--output-directory', help='Directory where videos should be saved to',
+                        default="/root/videos")
     parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
                         default=rospy.get_param('data_capture/messages/topics/is_record'))
-    parser.add_argument('--output-directory', help='Directory where videos should be saved to',
-                        default=rospy.get_param('data_capture/output_directory_path'))
     parser.add_argument('--video-type', help='Format of the video to be saved',
                         default=rospy.get_param('data_capture/video/default/type'))
     parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
@@ -85,8 +85,4 @@ if __name__ == "__main__":
         out_directory=args.output_directory,
     )
 
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        print("Shutting down")
-    cv2.destroyAllWindows()
+    rospy.spin()
