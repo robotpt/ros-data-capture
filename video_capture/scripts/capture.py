@@ -5,7 +5,6 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from cv_bridge import CvBridge, CvBridgeError
 
-import cv2
 import argparse
 
 from video_recorder import VideoRecorder
@@ -49,10 +48,10 @@ class VideoCapture:
         is_record = data.data
         try:
             if is_record:
-                rospy.loginfo("Starting a video recording")
+                rospy.loginfo("Starting to record video")
                 self._video_recorder.start_recording()
             else:
-                rospy.loginfo("Recording stopped")
+                rospy.loginfo("Stopped recording video")
                 self._video_recorder.stop_recording()
         except RuntimeError as e:
             rospy.logerr(e)
@@ -61,7 +60,7 @@ class VideoCapture:
 if __name__ == "__main__":
 
     # Having the topic as a command line argument allows multiple video recorder nodes to exist on different topics
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Record video from an image topic')
     parser.add_argument('--image-topic', help='The image topic for the program to subscribe to',
                         default="camera/color/image_raw")
     parser.add_argument('--output-directory', help='Directory where videos should be saved to',
