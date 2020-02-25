@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>audio_capture2</name>
+  <version>0.0.0</version>
+  <description>The audio_capture2 package</description>
+  <maintainer email="audrow.nash@gmail.com">Audrow Nash</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>audio_capture</depend>
+  <depend>std_msgs</depend>
+  <exec_depend>rospy</exec_depend>
+
+</package>
