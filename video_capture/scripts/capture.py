@@ -65,14 +65,23 @@ if __name__ == "__main__":
                         default="camera/color/image_raw")
     parser.add_argument('--output-directory', help='Directory where videos should be saved to',
                         default="/root/videos")
+    parser.add_argument('--frames-per-second', type=float, help='Number of frames per second sent from the image topic',
+                        default=30.0)
     parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
-                        default=rospy.get_param('data_capture/messages/topics/is_record'))
+                        default=rospy.get_param(
+                            'video_capture/topics/is_record'
+                            )
+                        )
     parser.add_argument('--video-type', help='Format of the video to be saved',
-                        default=rospy.get_param('data_capture/video/default/type'))
+                        default=rospy.get_param(
+                            'video_capture/output/type'
+                            )
+                        )
     parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
-                        default=rospy.get_param('data_capture/video/default/video_dimensions'))
-    parser.add_argument('--frames-per-second', type=float, help='Number of frames per second sent from the image source',
-                        default=rospy.get_param('data_capture/video/default/frames_per_second'))
+                        default=rospy.get_param(
+                            'video_capture/output/dimensions'
+                            )
+                        )
     args, _ = parser.parse_known_args()
 
     VideoCapture(

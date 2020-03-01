@@ -1,9 +1,6 @@
-data_capture:
-  messages:
-    topics:
-      is_record: data_capture/is_record
-  video:
-    default:
-      type: mp4
-      frames_per_second: 30.0
-      video_dimensions: 480p
+video_capture:
+  topics:
+    is_record: data_capture/is_record
+  output:
+    type: mp4
+    dimensions: 480p
