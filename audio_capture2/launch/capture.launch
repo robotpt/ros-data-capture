@@ -1,13 +1,14 @@
 <launch>
 
     <arg name="is_launch_audio_capture" default="true"/>
-    <arg name="output_directory" default="/root/audio"/>
 
     <arg name="audio_topic" default="audio/audio"/>
     <arg name="is_record_topic" default="data_capture/is_record"/>
+    <arg name="output_directory" default="/root/audio"/>
 
     <arg name="device" default=""/>
-    <arg name="channels" default="1"/>
+    <arg name="num_channels" default="1"/>
+    <arg name="chunk_size" default="1024"/>
     <arg name="sample_rate" default="16000"/>
     <arg name="format" default="wave"/>
 
@@ -21,19 +22,16 @@
         </include>
     </group>
 
-    <group ns="data_capture">
-        <node pkg="audio_capture2" type="capture.py" name="audio_capture" output="screen" ns="audio_capture">
-            <param name="channels" value="$(arg channels)"/>
-            <param name="sample_rate" value="$(arg sample_rate)"/>
-            <param name="chunk_size" value="1024"/>
-            <param name="messages/topics/is_record" value="$(arg is_record_topic)"/>
-            <param name="messages/topics/audio_data" value="$(arg audio_topic)"/>
-            <param name="output_directory" value="$(arg output_directory)"/>
-
-            <!-- Make these topics pop to the top level, change if you want more recorders -->
-            <remap from="$(arg audio_topic)" to="/$(arg audio_topic)"/>
-            <remap from="$(arg is_record_topic)" to="/$(arg is_record_topic)"/>
-        </node>
-    </group>
+    <node pkg="audio_capture2" type="capture.py" name="audio_capture" output="screen"
+        args="
+            --audio-topic $(arg audio_topic)
+            --is-record-topic $(arg is_record_topic)
+            --output-directory $(arg output_directory)
+            --num-channels $(arg num_channels)
+            --chunk_size $(arg chunk_size)
+            --sample_rate $(arg sample_rate)
+            --format $(arg format)
+        "
+        />
 
 </launch>

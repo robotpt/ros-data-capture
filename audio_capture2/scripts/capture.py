@@ -6,20 +6,11 @@ from std_msgs.msg import Bool
 from audio_common_msgs.msg import AudioData
 
 import os
+import argparse
 
 import pyaudio
 import wave
 import datetime
-
-
-IS_RECORD_TOPIC = rospy.get_param('messages/topics/is_record')
-AUDIO_DATA_TOPIC = rospy.get_param('messages/topics/audio_data')
-OUT_DIRECTORY = rospy.get_param('output_directory')
-
-CHANNEL = rospy.get_param('channels')
-SAMPLE_RATE = rospy.get_param('sample_rate')
-CHUNK_SIZE = rospy.get_param('chunk_size')
-FORMAT_SIZE = pyaudio.paInt16
 
 
 class AudioCapture:
@@ -28,6 +19,10 @@ class AudioCapture:
             self,
             is_record_topic,
             audio_data_topic,
+            num_channels,
+            sample_rate,
+            chunk_size,
+            format_size,
             out_file_directory='audio',
     ):
 
@@ -36,6 +31,10 @@ class AudioCapture:
         self._is_record_subscriber = rospy.Subscriber(is_record_topic, Bool, self._record_callback, queue_size=1)
         self._audio_data_topic = rospy.Subscriber(audio_data_topic, AudioData, self._audio_data_callback, queue_size=1)
 
+        self._num_channels = num_channels
+        self._sample_rate = sample_rate
+        self._chunk_size = chunk_size
+        self._format_size = format_size
         self._out_directory = out_file_directory
 
         self._start_record_datetime = None
@@ -85,19 +84,46 @@ class AudioCapture:
         file_path = os.path.join(self._out_directory, file_name)
 
         wf = wave.open(file_path, 'wb')
-        wf.setnchannels(CHANNEL)
-        wf.setsampwidth(pyaudio.PyAudio().get_sample_size(FORMAT_SIZE))
-        wf.setframerate(SAMPLE_RATE)
-        wf.setnframes(CHUNK_SIZE)
+        wf.setnchannels(self._num_channels)
+        wf.setsampwidth(pyaudio.PyAudio().get_sample_size(self._format_size))
+        wf.setframerate(self._sample_rate)
+        wf.setnframes(self._chunk_size)
         wf.writeframes(b''.join(audio_data))
         wf.close()
 
 
 if __name__ == "__main__":
 
-    ac = AudioCapture(
-        is_record_topic=IS_RECORD_TOPIC,
-        audio_data_topic=AUDIO_DATA_TOPIC,
-        out_file_directory=OUT_DIRECTORY,
+    # Having the topic as a command line argument allows multiple video recorder nodes to exist on different topics
+    parser = argparse.ArgumentParser(description='Record video from an image topic')
+    parser.add_argument('--audio-topic', help='The audio topic for the program to subscribe to',
+                        default="audio/audio")
+    parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
+                        default='audio_capture/is_record')
+    parser.add_argument('--output-directory', help='Directory where audio should be saved to',
+                        default="/root/audio")
+    parser.add_argument('--num-channels', type=int, help='Number of audio channels',
+                        default=1)
+    parser.add_argument('--chunk-size', type=int, help='The size in bits of audio chunks received',
+                        default=1024)
+    parser.add_argument('--sample-rate', type=int, help='The sample rate that the audio is recorded in',
+                        default=16000)
+    parser.add_argument('--format', help='The format of the audio received (currently only supports WAV)',
+                        default="wave")
+    parser.add_argument('--format-size', help='The format encoding used by PyAudio',
+                        default=pyaudio.paInt16)
+
+    args, _ = parser.parse_known_args()
+
+    assert args.format == "wave"
+
+    AudioCapture(
+        is_record_topic=args.is_record_topic,
+        audio_data_topic=args.audio_topic,
+        out_file_directory=args.output_directory,
+        num_channels=args.num_channels,
+        sample_rate=args.sample_rate,
+        chunk_size=args.chunk_size,
+        format_size=args.format_size,
     )
     rospy.spin()
