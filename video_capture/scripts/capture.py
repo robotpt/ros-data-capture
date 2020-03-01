@@ -68,20 +68,11 @@ if __name__ == "__main__":
     parser.add_argument('--frames-per-second', type=float, help='Number of frames per second sent from the image topic',
                         default=30.0)
     parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
-                        default=rospy.get_param(
-                            'video_capture/topics/is_record'
-                            )
-                        )
+                        default="video_capture/is_record")
     parser.add_argument('--video-type', help='Format of the video to be saved',
-                        default=rospy.get_param(
-                            'video_capture/output/type'
-                            )
-                        )
+                        default="mp4")
     parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
-                        default=rospy.get_param(
-                            'video_capture/output/dimensions'
-                            )
-                        )
+                        default="480p")
     args, _ = parser.parse_known_args()
 
     VideoCapture(

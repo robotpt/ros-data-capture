@@ -1,6 +1,0 @@
-video_capture:
-  topics:
-    is_record: data_capture/is_record
-  output:
-    type: mp4
-    dimensions: 480p
