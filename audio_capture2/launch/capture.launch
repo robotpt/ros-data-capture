@@ -15,7 +15,7 @@
     <group if="$(eval is_launch_audio_capture)">
         <include file="$(find audio_capture)/launch/capture.launch">
             <arg name="device" default="$(arg device)"/>
-            <arg name="channels" default="$(arg channels)"/>
+            <arg name="channels" default="$(arg num_channels)"/>
             <arg name="sample_rate" default="$(arg sample_rate)"/>
             <arg name="format" default="$(arg format)"/>
             <arg name="ns" default="audio"/>
