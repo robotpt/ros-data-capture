@@ -1,7 +1,7 @@
 <launch>
 
     <arg name="upload_directory_path" default="/root/upload"/>
-    <arg name="bucket_name" default="ros-bucket-128947294807"/>
+    <arg name="bucket_name" default="$(env AWS_BUCKET_NAME)"/>
 
     <rosparam file="$(find aws_uploader)/config/config.yaml" command="load" />
 
