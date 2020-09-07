@@ -19,17 +19,9 @@ import rospy
 import sys
 import os
 
+from std_msgs.msg import String
 from aws_uploader.aws_file_uploader import AwsFileUploader
 
-
-REGION = rospy.get_param('aws/region_name')
-IS_REMOVE_FILE_ON_UPLOAD = rospy.get_param('uploader/is_remove_file_on_upload')
-IS_CREATE_DIRECTORY_IF_DOESNT_EXIST = rospy.get_param(
-    'uploader/is_create_directory_if_doesnt_exist',
-)
-SECONDS_DELAY_TO_CHECK_IF_FILE_IS_BEING_WRITTEN = rospy.get_param(
-    'uploader/seconds_delay_to_check_if_file_is_being_written',
-)
 
 DIR_IDX = 1
 BUCKET_NAME_IDX = 2
@@ -37,12 +29,20 @@ BUCKET_NAME_IDX = 2
 
 def main():
 
+    region = rospy.get_param('aws/region_name')
+
+    is_remove_file_on_upload = rospy.get_param('uploader/is_remove_file_on_upload')
+    is_create_directory_if_doesnt_exist = rospy.get_param(
+        'uploader/is_create_directory_if_doesnt_exist')
+    publish_topic = rospy.get_param('uploader/publish_topic')
+    seconds_delay_to_check_if_file_is_being_written = rospy.get_param(
+        'uploader/seconds_delay_to_check_if_file_is_being_written')
     args = sys.argv
     directory_path = args[DIR_IDX]
     bucket_name = args[BUCKET_NAME_IDX]
 
     if not os.path.exists(directory_path):
-        if IS_CREATE_DIRECTORY_IF_DOESNT_EXIST:
+        if is_create_directory_if_doesnt_exist:
             os.makedirs(directory_path, exist_ok=True)
         else:
             raise IOError("Directory doesn't exist: '{}'".format(directory_path))
@@ -54,20 +54,25 @@ def main():
         'aws_uploader_{}'.format(directory_name),
         anonymous=True,
     )
+    uploaded_publisher = rospy.Publisher(publish_topic, String, queue_size=1)
 
     aws_file_uploader = AwsFileUploader(
-        region=REGION,
+        region=region,
         default_bucket=bucket_name,
-        seconds_delay_to_check_if_file_is_being_written=SECONDS_DELAY_TO_CHECK_IF_FILE_IS_BEING_WRITTEN,
+        seconds_delay_to_check_if_file_is_being_written=seconds_delay_to_check_if_file_is_being_written,
     )
 
     def upload_directory_callback(_):
         uploaded_files, not_uploaded_files = aws_file_uploader.upload_directory_contents_to_aws_directory(
             directory_path=directory_path,
-            is_remove_file_on_upload=IS_REMOVE_FILE_ON_UPLOAD,
+            is_remove_file_on_upload=is_remove_file_on_upload,
         )
         if len(uploaded_files):
             rospy.loginfo("UPLOADED {}".format(uploaded_files))
+            for f in uploaded_files:
+                msg = String()
+                msg.data = f
+                uploaded_publisher.publish(msg)
         if len(not_uploaded_files):
             rospy.logdebug("The following are being written to: {}".format(not_uploaded_files))
 
