@@ -13,9 +13,12 @@ class DirectorySizeManager:
 
         if not os.path.isdir(directory):
             raise ValueError("'{}' is not a valid directory".format(directory))
+        if max_size_in_bytes < 0:
+            raise ValueError("'{}' is not a valid max size for the directory".format(max_size_in_bytes))
 
         self._dir = directory
-        self._max_size_in_bytes = self.set_max_file_size(max_size_in_bytes)
+        self._max_size_in_bytes = None
+        self.set_max_file_size(max_size_in_bytes)
 
     @property
     def directory_size(self):

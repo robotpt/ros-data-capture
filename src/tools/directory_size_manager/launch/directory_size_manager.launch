@@ -1,0 +1,11 @@
+<launch>
+
+    <arg name="directory_path" default="/root/upload"/>
+
+    <rosparam file="$(find directory_size_manager)/config/config.yaml" command="load" />
+
+    <node pkg="directory_size_manager" type="manager.py" name="directory_size_manager" output="screen"
+        args="$(arg directory_path)"
+    />
+
+</launch>
