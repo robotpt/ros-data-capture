@@ -1,3 +1,4 @@
 directory_size_manager:
   is_create_directory_if_doesnt_exist: true
-  max_size_in_kilobytes: 1 #1048576
+  max_size_in_kilobytes: 1048576
+  publish_topic: data_capture/file/deleted
