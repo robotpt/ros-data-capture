@@ -3,4 +3,5 @@ aws:
 uploader:
   is_remove_file_on_upload: true
   is_create_directory_if_doesnt_exist: true
+  publish_topic: data_capture/file/uploaded
   seconds_delay_to_check_if_file_is_being_written: 0.1
