@@ -43,7 +43,7 @@ def main():
 
     if not os.path.exists(directory_path):
         if is_create_directory_if_doesnt_exist:
-            os.makedirs(directory_path, exist_ok=True)
+            os.makedirs(directory_path)
         else:
             raise IOError("Directory doesn't exist: '{}'".format(directory_path))
     if not os.path.isdir(directory_path):
