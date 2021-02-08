@@ -57,6 +57,8 @@ class VideoRecorder:
             )
         out_file_path = os.path.join(self._out_directory, out_file_name)
 
+        self.out_file_path = out_file_path
+
         self._video_writer = cv2.VideoWriter(
             out_file_path,
             self.VIDEO_TYPE_CODE[self._video_type],

@@ -9,6 +9,70 @@ import argparse
 
 from video_recorder import VideoRecorder
 
+from threading import Timer
+import os
+from time import sleep
+
+
+"""
+This is a threaded timer to execute a piece of code periodically 
+without blocking the main execution.
+
+This non-blocking method allows the code to keep running while also
+executing our function every n seconds
+
+NOTE:
+- start() and stop() are safe to call multiple times even if the timer 
+has already started/stopped
+
+- You can change interval anytime, it will be effective after next run. 
+Same for args, kwargs and even function!
+"""
+
+class RepeatedTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        self._timer     = None
+        self.interval   = interval
+        self.function   = function
+        self.args       = args
+        self.kwargs     = kwargs
+        self.is_running = False
+        self.start()
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function(*self.args, **self.kwargs)
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
+
+"""
+This function is used to monitor the filesize of a file and throw an error 
+if it exceeds a preset value.
+
+Arguments:
+filename: The filename of the video file with full path to it. (str)
+upperlimit_bytes: The upperlimit of the filesize (int)
+"""
+def monitorVideoFileSize(filename, upperlimit_bytes):
+    filesize_in_bytes = 0
+    try:
+        filesize_in_bytes = os.path.getsize(filename)
+    except FileNotFoundError:
+        # During the first run, the function is called before the file is created. So skip the check
+        pass
+    
+    if filesize_in_bytes > upperlimit_bytes:
+        raise RuntimeError("The video file size has exceeded the set limits")
+
 
 class VideoCapture:
 
@@ -48,12 +112,22 @@ class VideoCapture:
         is_record = data.data
         try:
             if is_record:
-                rospy.loginfo("Starting to record video")
+                rospy.loginfo("Starting to record video")             
+
+                # Starting the periodic check on filesize. Upperfilesize = 1GB, interval=5 seconds
+                # RepeatedTimer auto-starts, no need of rt.start()
+                rt = RepeatedTimer(5, monitorVideoFileSize, self._video_recorder.out_file_path, 1073741824) 
+
                 self._video_recorder.start_recording()
+
             else:
                 rospy.loginfo("Stopped recording video")
                 self._video_recorder.stop_recording()
+                rt.stop()
         except RuntimeError as e:
+            # Checking if the rt variable has been defined before stopping it
+            if 'rt' in locals() or 'rt' in globals():
+                rt.stop()
             rospy.logerr(e)
 
 
