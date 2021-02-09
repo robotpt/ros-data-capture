@@ -13,6 +13,7 @@ from threading import Timer
 import os
 from time import sleep
 
+import psutil
 
 """
 This is a threaded timer to execute a piece of code periodically 
@@ -55,23 +56,18 @@ class RepeatedTimer(object):
         self.is_running = False
 
 """
-This function is used to monitor the filesize of a file and throw an error 
+This function is used to monitor the memory utilization and throw an error 
 if it exceeds a preset value.
 
 Arguments:
-filename: The filename of the video file with full path to it. (str)
-upperlimit_bytes: The upperlimit of the filesize (int)
+memory_upperlimit_percent: The upperlimit of the memory utilization (float)
 """
-def monitorVideoFileSize(filename, upperlimit_bytes):
-    filesize_in_bytes = 0
-    try:
-        filesize_in_bytes = os.path.getsize(filename)
-    except FileNotFoundError:
-        # During the first run, the function is called before the file is created. So skip the check
-        pass
+def monitorAvailableMemory(memory_upperlimit_percent):
+    # Utilized memory
+    utilized_memory = psutil.virtual_memory().percent
     
-    if filesize_in_bytes > upperlimit_bytes:
-        raise RuntimeError("The video file size has exceeded the set limits")
+    if utilized_memory > memory_upperlimit_percent:
+        raise RuntimeError("The utilized memory on the system has exceeded preset limits. Stopping video recording")
 
 
 class VideoCapture:
@@ -114,9 +110,9 @@ class VideoCapture:
             if is_record:
                 rospy.loginfo("Starting to record video")             
 
-                # Starting the periodic check on filesize. Upperfilesize = 1GB, interval=5 seconds
+                # Starting the periodic check on free memory, stops if exceeds 90% utilization at interval=2 seconds
                 # RepeatedTimer auto-starts, no need of rt.start()
-                rt = RepeatedTimer(5, monitorVideoFileSize, self._video_recorder.out_file_path, 1073741824) 
+                rt = RepeatedTimer(2, monitorAvailableMemory, 90) 
 
                 self._video_recorder.start_recording()
 
@@ -124,6 +120,7 @@ class VideoCapture:
                 rospy.loginfo("Stopped recording video")
                 self._video_recorder.stop_recording()
                 rt.stop()
+
         except RuntimeError as e:
             # Checking if the rt variable has been defined before stopping it
             if 'rt' in locals() or 'rt' in globals():
