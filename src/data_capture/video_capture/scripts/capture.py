@@ -9,6 +9,66 @@ import argparse
 
 from video_recorder import VideoRecorder
 
+from threading import Timer
+import os
+from time import sleep
+
+import psutil
+
+"""
+This is a threaded timer to execute a piece of code periodically 
+without blocking the main execution.
+
+This non-blocking method allows the code to keep running while also
+executing our function every n seconds
+
+NOTE:
+- start() and stop() are safe to call multiple times even if the timer 
+has already started/stopped
+
+- You can change interval anytime, it will be effective after next run. 
+Same for args, kwargs and even function!
+"""
+
+class RepeatedTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        self._timer     = None
+        self.interval   = interval
+        self.function   = function
+        self.args       = args
+        self.kwargs     = kwargs
+        self.is_running = False
+        self.start()
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function(*self.args, **self.kwargs)
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
+
+"""
+This function is used to monitor the memory utilization and throw an error 
+if it exceeds a preset value.
+
+Arguments:
+memory_upperlimit_percent: The upperlimit of the memory utilization (float)
+"""
+def monitorAvailableMemory(memory_upperlimit_percent):
+    # Utilized memory
+    utilized_memory = psutil.virtual_memory().percent
+    
+    if utilized_memory > memory_upperlimit_percent:
+        raise RuntimeError("The utilized memory on the system has exceeded preset limits. Stopping video recording")
+
 
 class VideoCapture:
 
@@ -48,12 +108,23 @@ class VideoCapture:
         is_record = data.data
         try:
             if is_record:
-                rospy.loginfo("Starting to record video")
+                rospy.loginfo("Starting to record video")             
+
+                # Starting the periodic check on free memory, stops if exceeds 90% utilization at interval=2 seconds
+                # RepeatedTimer auto-starts, no need of rt.start()
+                rt = RepeatedTimer(2, monitorAvailableMemory, 90) 
+
                 self._video_recorder.start_recording()
+
             else:
                 rospy.loginfo("Stopped recording video")
                 self._video_recorder.stop_recording()
+                rt.stop()
+
         except RuntimeError as e:
+            # Checking if the rt variable has been defined before stopping it
+            if 'rt' in locals() or 'rt' in globals():
+                rt.stop()
             rospy.logerr(e)
 
 
