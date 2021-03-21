@@ -116,22 +116,23 @@ class VideoCapture:
     def _is_record_callback(self, data):
 
         is_record = data.data
-        global is_record_interrupted 
-        is_record_interrupted = False
-        if is_record:
-            rospy.loginfo("Starting to record video")             
+        try:
+            if is_record:
+                rospy.loginfo("Starting to record video")             
 
-            # Starting the periodic check on free memory, stops if exceeds 90% utilization at interval=2 seconds
-            # RepeatedTimer auto-starts, no need of rt.start()
-            rt = RepeatedTimer(2, monitorAvailableMemory, 90, self._video_recorder) 
+                # Starting the periodic check on free memory, stops if exceeds 90% utilization at interval=2 seconds
+                # RepeatedTimer auto-starts, no need of rt.start()
+                rt = RepeatedTimer(2, monitorAvailableMemory, 90, self._video_recorder) 
 
-            self._video_recorder.start_recording()
+                self._video_recorder.start_recording()
 
-        else:
-           rospy.loginfo("Stopped recording video")
-           self._video_recorder.stop_recording()
-           if 'rt' in locals() or 'rt' in globals():
-               rt.stop()
+            else:
+                rospy.loginfo("Stopped recording video")
+                self._video_recorder.stop_recording()
+                if 'rt' in locals() or 'rt' in globals():
+                    rt.stop()
+        except RuntimeError as e:
+            rospy.logerr(e)
 
 if __name__ == "__main__":
 
