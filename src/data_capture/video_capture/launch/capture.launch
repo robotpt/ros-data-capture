@@ -2,7 +2,7 @@
 
     <arg name="image_topic" default="camera/color/image_raw"/>
     <arg name="is_record_topic" default="video_capture/is_record"/>
-    <arg name="is_memory_usage_exceeded_topic" default="data_capture/is_memory_usage_exceeded"/>
+    <arg name="is_memory_usage_exceeded_topic" default="/is_memory_usage_exceeded"/>
     <arg name="output_directory" default="/root/videos"/>
 
     <arg name="frames_per_second" default="30.0"/>

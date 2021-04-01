@@ -39,6 +39,9 @@ class VideoCapture:
             is_memory_usage_exceeded_topic, Bool, self._memory_check_callback)
         self._bridge = CvBridge()
 
+        # This flag is used to block recording if memory exceeds limits
+        self._allow_recording = True
+
     def _image_callback(self, data):
 
         try:
@@ -54,9 +57,12 @@ class VideoCapture:
         is_record = data.data
         try:
             if is_record:
-                rospy.loginfo("Starting to record video")
-
-                self._video_recorder.start_recording()
+                if self._allow_recording:
+                    rospy.loginfo("Starting to record video")
+                    self._video_recorder.start_recording()
+                else:
+                    rospy.logerr(
+                        "Recording will not happen due to memory limits exceeded")
 
             else:
                 rospy.loginfo("Stopped recording video")
@@ -69,12 +75,17 @@ class VideoCapture:
         is_memory_usage_exceeded = data.data
 
         if is_memory_usage_exceeded:
+            self._allow_recording = False
             if self._video_recorder._is_recording:
                 self._video_recorder.stop_recording()
                 rospy.logerr(
                     "Stopped Video recording due to memory utilization exceeded")
             else:
-                rospy.loginfo("Memory utilization exceeded the set limits")
+                rospy.loginfo(
+                    "Memory utilization exceeded the set limits. Recording will not happen")
+
+        else:
+            self._allow_recording = True
 
 
 if __name__ == "__main__":
@@ -91,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
                         default="video_capture/is_record")
     parser.add_argument('--is-memory-usage-exceeded-topic', help='Topic that publishes if memory utilization exceeds limits',
-                        default="data_capture/is_memory_usage_exceeded")
+                        default="/is_memory_usage_exceeded")
     parser.add_argument('--video-type', help='Format of the video to be saved',
                         default="mp4")
     parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
