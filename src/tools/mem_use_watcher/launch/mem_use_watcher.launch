@@ -1,9 +1,11 @@
 <launch>
 
-    <arg name="mem_upper_limit" default="90"/>
+    <arg name="mem_upper_limit" default="90.0"/>
 
     <node pkg="mem_use_watcher" type="watcher.py" name="mem_use_watcher" output="screen"
-        args="$(arg mem_upper_limit)"
+        args="
+            --mem-upper-limit $(arg mem_upper_limit)
+        "
     />
 
 </launch>
