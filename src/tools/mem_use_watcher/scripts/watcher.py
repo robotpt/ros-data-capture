@@ -27,7 +27,7 @@ def monitorAvailableMemory(memory_upperlimit_percent):
 def mem_use_watcher(mem_upper_limit):
     pub = rospy.Publisher('is_memory_usage_exceeded', Bool, queue_size=10)
     rospy.init_node('mem_use_watcher', anonymous=True)
-    rate = rospy.Rate(1)  # 1hz
+    rate = rospy.Rate(0.2)  # Once every 5 seconds = 1/5 = 0.2 hz
     while not rospy.is_shutdown():
 
         # Check on free memory if exceeds 90% utilization
