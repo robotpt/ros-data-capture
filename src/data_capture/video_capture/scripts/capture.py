@@ -65,8 +65,9 @@ class VideoCapture:
                         "Recording will not happen due to memory limits exceeded")
 
             else:
-                rospy.loginfo("Stopped recording video")
-                self._video_recorder.stop_recording()
+                if self._video_recorder._is_recording:
+                    rospy.loginfo("Stopped recording video")
+                    self._video_recorder.stop_recording()
 
         except RuntimeError as e:
             rospy.logerr(e)
