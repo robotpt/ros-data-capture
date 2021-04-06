@@ -24,9 +24,10 @@ def monitorAvailableMemory(memory_upperlimit_percent):
     return False
 
 
-def mem_use_watcher(mem_upper_limit):
-    pub = rospy.Publisher('is_memory_usage_exceeded', Bool, queue_size=10)
-    rospy.init_node('mem_use_watcher', anonymous=True)
+def ram_usage_watcher(mem_upper_limit):
+    pub = rospy.Publisher(
+        'data_capture/is_memory_usage_exceeded', Bool, queue_size=1)
+    rospy.init_node('ram_usage_watcher', anonymous=True)
     rate = rospy.Rate(0.2)  # Once every 5 seconds = 1/5 = 0.2 hz
     while not rospy.is_shutdown():
 
@@ -47,6 +48,6 @@ if __name__ == '__main__':
     args, _ = parser.parse_known_args()
 
     try:
-        mem_use_watcher(args.mem_upper_limit)
+        ram_usage_watcher(args.mem_upper_limit)
     except rospy.ROSInterruptException:
         pass

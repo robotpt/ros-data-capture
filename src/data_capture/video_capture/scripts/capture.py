@@ -103,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
                         default="video_capture/is_record")
     parser.add_argument('--is-memory-usage-exceeded-topic', help='Topic that publishes if memory utilization exceeds limits',
-                        default="/is_memory_usage_exceeded")
+                        default="data_capture/is_memory_usage_exceeded")
     parser.add_argument('--video-type', help='Format of the video to be saved',
                         default="mp4")
     parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
