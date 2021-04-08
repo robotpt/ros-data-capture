@@ -2,18 +2,18 @@
 
     <arg name="image_topic" default="camera/color/image_raw"/>
     <arg name="is_record_topic" default="video_capture/is_record"/>
-    <arg name="is_memory_usage_exceeded_topic" default="data_capture/is_memory_usage_exceeded"/>
     <arg name="output_directory" default="/root/videos"/>
 
     <arg name="frames_per_second" default="30.0"/>
     <arg name="video_type" default="mp4"/>
     <arg name="video_dimensions" default="480p"/>
 
+    <param name="data_capture/is_memory_usage_exceeded_param" type="str" value="data_capture/is_memory_usage_exceeded">
+
     <node pkg="video_capture" type="capture.py" name="video_capture" output="screen"
         args="
             --image-topic $(arg image_topic) 
             --is-record-topic $(arg is_record_topic)
-            --is-memory-usage-exceeded-topic $(arg is_memory_usage_exceeded_topic)
             --output-directory $(arg output_directory) 
             --frames-per-second $(arg frames_per_second)
             --video-type $(arg video_type)

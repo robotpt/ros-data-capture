@@ -102,8 +102,6 @@ if __name__ == "__main__":
                         default=30.0)
     parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
                         default="video_capture/is_record")
-    parser.add_argument('--is-memory-usage-exceeded-topic', help='Topic that publishes if memory utilization exceeds limits',
-                        default="data_capture/is_memory_usage_exceeded")
     parser.add_argument('--video-type', help='Format of the video to be saved',
                         default="mp4")
     parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
@@ -113,7 +111,8 @@ if __name__ == "__main__":
     VideoCapture(
         image_topic=args.image_topic,
         is_record_topic=args.is_record_topic,
-        is_memory_usage_exceeded_topic=args.is_memory_usage_exceeded_topic,
+        is_memory_usage_exceeded_topic=rospy.get_param(
+            "data_capture/is_memory_usage_exceeded_param"),
         video_type=args.video_type,
         video_dimensions=args.video_dimensions,
         frames_per_second=args.frames_per_second,
