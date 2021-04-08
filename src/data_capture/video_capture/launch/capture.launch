@@ -8,7 +8,7 @@
     <arg name="video_type" default="mp4"/>
     <arg name="video_dimensions" default="480p"/>
 
-    <param name="data_capture/is_memory_usage_exceeded_param" type="str" value="data_capture/is_memory_usage_exceeded">
+    <param name="data_capture/is_high_memory_usage_topic" type="str" value="data_capture/is_memory_usage_exceeded">
 
     <node pkg="video_capture" type="capture.py" name="video_capture" output="screen"
         args="

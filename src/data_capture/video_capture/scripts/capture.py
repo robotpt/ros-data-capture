@@ -112,7 +112,7 @@ if __name__ == "__main__":
         image_topic=args.image_topic,
         is_record_topic=args.is_record_topic,
         is_memory_usage_exceeded_topic=rospy.get_param(
-            "data_capture/is_memory_usage_exceeded_param"),
+            "data_capture/is_high_memory_usage_topic"),
         video_type=args.video_type,
         video_dimensions=args.video_dimensions,
         frames_per_second=args.frames_per_second,
