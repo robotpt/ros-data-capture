@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>mem_use_watcher</name>
+  <version>0.0.0</version>
+  <description>The mem_use_watcher package</description>
+  <maintainer email="anandgokul18@gmail.com">Anand Gokul</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <test_depend>rostest</test_depend>
+  <test_depend>fallocate</test_depend>
+
+</package>
