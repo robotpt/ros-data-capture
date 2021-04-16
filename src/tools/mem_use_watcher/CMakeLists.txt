@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(directory_size_manager)
+project(mem_use_watcher)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
