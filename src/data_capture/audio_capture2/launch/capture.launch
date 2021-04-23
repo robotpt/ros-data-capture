@@ -22,7 +22,7 @@
         </include>
     </group>
 
-    <node pkg="audio_capture2" type="capture.py" name="audio_capture" output="screen"
+    <node pkg="audio_capture2" type="capture.py" name="$(anon audio_capture)" output="screen"
         args="
             --audio-topic $(arg audio_topic)
             --is-record-topic $(arg is_record_topic)
