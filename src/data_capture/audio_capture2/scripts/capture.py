@@ -23,6 +23,7 @@ class AudioCapture:
             sample_rate,
             chunk_size,
             format_size,
+            file_name_prefix='',
             out_file_directory='audio',
     ):
 
@@ -35,6 +36,10 @@ class AudioCapture:
         self._sample_rate = sample_rate
         self._chunk_size = chunk_size
         self._format_size = format_size
+        self._file_name_prefix = file_name_prefix
+        if len(self._file_name_prefix) > 0:
+            self._file_name_prefix += '_'
+        rospy.loginfo(self._file_name_prefix)
         self._out_directory = out_file_directory
 
         self._start_record_datetime = None
@@ -77,7 +82,8 @@ class AudioCapture:
 
         if not os.path.exists(self._out_directory):
             os.makedirs(self._out_directory)
-        file_name = "{date_str}.{ext}".format(
+        file_name = "{prefix}{date_str}.{ext}".format(
+            prefix=self._file_name_prefix,
             date_str=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'),
             ext='wav'
         )
@@ -112,6 +118,10 @@ if __name__ == "__main__":
                         default="wave")
     parser.add_argument('--format-size', help='The format encoding used by PyAudio',
                         default=pyaudio.paInt16)
+    parser.add_argument('--file-name-prefix',
+                        type=str,
+                        help='The string to prepend to the file name; for example, \'evaluation\'',
+                        default='')
 
     args, _ = parser.parse_known_args()
 
@@ -125,5 +135,6 @@ if __name__ == "__main__":
         sample_rate=args.sample_rate,
         chunk_size=args.chunk_size,
         format_size=args.format_size,
+        file_name_prefix=args.file_name_prefix
     )
     rospy.spin()
