@@ -11,6 +11,7 @@
     <arg name="chunk_size" default="1024"/>
     <arg name="sample_rate" default="16000"/>
     <arg name="format" default="wave"/>
+    <arg name="file_name_prefix" default="''"/>
 
     <group if="$(eval is_launch_audio_capture)">
         <include file="$(find audio_capture)/launch/capture.launch">
@@ -28,9 +29,10 @@
             --is-record-topic $(arg is_record_topic)
             --output-directory $(arg output_directory)
             --num-channels $(arg num_channels)
-            --chunk_size $(arg chunk_size)
-            --sample_rate $(arg sample_rate)
+            --chunk-size $(arg chunk_size)
+            --sample-rate $(arg sample_rate)
             --format $(arg format)
+            --file-name-prefix $(arg file_name_prefix)
         "
         />
 
