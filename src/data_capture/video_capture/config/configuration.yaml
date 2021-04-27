@@ -1,0 +1,11 @@
+# Configuration file for the video capture
+is_high_memory_usage_topic: "data_capture/is_memory_usage_exceeded"
+video_capture:
+  default_param:
+    image_topic: "camera/color/image_raw"
+    is_record_topic: "video_capture/is_record"
+    output_directory : "/root/videos"
+  cam_settings:
+    frames_per_second : 30.0
+    video_type: "mp4"
+    video_dimensions: "480p"
