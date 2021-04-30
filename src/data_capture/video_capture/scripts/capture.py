@@ -94,9 +94,9 @@ if __name__ == "__main__":
     # Getting the values as params
     instance_id = rospy.get_param("instance_id")
 
-    image_topic = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/image_topic")
-    is_record_topic = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/is_record_topic")
-    output_directory = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/output_directory")
+    image_topic = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/image_topic", "camera/color/image_raw")
+    is_record_topic = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/is_record_topic", "video_capture/is_record")
+    output_directory = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/output_directory", "/root/videos")
 
     frames_per_second = rospy.get_param("/data_capture/"+instance_id+"/video_capture/cam_settings/frames_per_second")
     video_type = rospy.get_param("/data_capture/"+instance_id+"/video_capture/cam_settings/video_type")
