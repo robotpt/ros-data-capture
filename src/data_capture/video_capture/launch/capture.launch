@@ -2,10 +2,12 @@
 
     <arg name="instance_id" default="1"/>
 
-    <param name="instance_id" type="str" value="$(arg instance_id)"/>
-
     <rosparam file="$(find video_capture)/config/configuration.yaml" ns="/data_capture/$(arg instance_id)/" subst_value="True"/>
 
-    <node pkg="video_capture" type="capture.py" name="video_capture_$(arg instance_id)" output="screen"/>
+    <node pkg="video_capture" type="capture.py" name="video_capture_$(arg instance_id)" output="screen"
+    args="
+            --instance_id $(arg instance_id) 
+        "
+    />
 
 </launch>

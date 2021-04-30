@@ -91,18 +91,21 @@ class VideoCapture:
 
 if __name__ == "__main__":
 
+    # Getting the instance_id for the parameters
+    parser = argparse.ArgumentParser(description='instance_id for video recording')
+    parser.add_argument('--instance_id', help='instance_id for parameters namespace', default="1")
+    args, _ = parser.parse_known_args()
+
     # Getting the values as params
-    instance_id = rospy.get_param("instance_id")
+    image_topic = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/default_param/image_topic", "camera/color/image_raw")
+    is_record_topic = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/default_param/is_record_topic", "video_capture/is_record")
+    output_directory = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/default_param/output_directory", "/root/videos")
 
-    image_topic = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/image_topic", "camera/color/image_raw")
-    is_record_topic = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/is_record_topic", "video_capture/is_record")
-    output_directory = rospy.get_param("/data_capture/"+instance_id+"/video_capture/default_param/output_directory", "/root/videos")
+    frames_per_second = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/cam_settings/frames_per_second")
+    video_type = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/cam_settings/video_type")
+    video_dimensions = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/cam_settings/video_dimensions")
 
-    frames_per_second = rospy.get_param("/data_capture/"+instance_id+"/video_capture/cam_settings/frames_per_second")
-    video_type = rospy.get_param("/data_capture/"+instance_id+"/video_capture/cam_settings/video_type")
-    video_dimensions = rospy.get_param("/data_capture/"+instance_id+"/video_capture/cam_settings/video_dimensions")
-
-    is_memory_usage_exceeded_topic = rospy.get_param("/data_capture/"+instance_id+"/is_high_memory_usage_topic")
+    is_memory_usage_exceeded_topic = rospy.get_param("/data_capture/"+args.instance_id+"/is_high_memory_usage_topic")
 
     VideoCapture(
         image_topic=image_topic,
