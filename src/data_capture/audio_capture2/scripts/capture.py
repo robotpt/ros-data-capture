@@ -100,41 +100,32 @@ class AudioCapture:
 
 if __name__ == "__main__":
 
-    # Having the topic as a command line argument allows multiple video recorder nodes to exist on different topics
-    parser = argparse.ArgumentParser(description='Record video from an image topic')
-    parser.add_argument('--audio-topic', help='The audio topic for the program to subscribe to',
-                        default="audio/audio")
-    parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
-                        default='audio_capture/is_record')
-    parser.add_argument('--output-directory', help='Directory where audio should be saved to',
-                        default="/root/audio")
-    parser.add_argument('--num-channels', type=int, help='Number of audio channels',
-                        default=1)
-    parser.add_argument('--chunk-size', type=int, help='The size in bits of audio chunks received',
-                        default=1024)
-    parser.add_argument('--sample-rate', type=int, help='The sample rate that the audio is recorded in',
-                        default=16000)
-    parser.add_argument('--format', help='The format of the audio received (currently only supports WAV)',
-                        default="wave")
-    parser.add_argument('--format-size', help='The format encoding used by PyAudio',
-                        default=pyaudio.paInt16)
-    parser.add_argument('--file-name-prefix',
-                        type=str,
-                        help='The string to prepend to the file name; for example, \'evaluation\'',
-                        default='')
-
+    # Getting the instance_id for the parameters
+    parser = argparse.ArgumentParser(description='instance_id for audio recording')
+    parser.add_argument('--instance_id', help='instance_id for parameters namespace', default="1")
     args, _ = parser.parse_known_args()
-
-    assert args.format == "wave"
+    
+    # Getting the values as params
+    is_record_topic = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/is_record_topic", "audio_capture/is_record")
+    audio_topic = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/audio_topic", "audio/audio")
+    output_directory = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/output_directory", "/root/audio")
+    num_channels = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/num_channels", 1)
+    sample_rate = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/sample_rate", 16000)
+    chunk_size = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/chunk_size", 1024)
+    format_type = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/format_type", "wave")
+    format_size = eval(rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/format_size", "pyaudio.paInt16"))
+    file_name_prefix = rospy.get_param("/data_capture/"+args.instance_id+"/audio_capture/file_name_prefix", '')
+    
+    assert format_type == "wave"
 
     AudioCapture(
-        is_record_topic=args.is_record_topic,
-        audio_data_topic=args.audio_topic,
-        out_file_directory=args.output_directory,
-        num_channels=args.num_channels,
-        sample_rate=args.sample_rate,
-        chunk_size=args.chunk_size,
-        format_size=args.format_size,
-        file_name_prefix=args.file_name_prefix
+        is_record_topic=is_record_topic,
+        audio_data_topic=audio_topic,
+        out_file_directory=output_directory,
+        num_channels=num_channels,
+        sample_rate=sample_rate,
+        chunk_size=chunk_size,
+        format_size=format_size,
+        file_name_prefix=file_name_prefix
     )
     rospy.spin()
