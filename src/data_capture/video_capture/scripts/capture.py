@@ -91,32 +91,30 @@ class VideoCapture:
 
 if __name__ == "__main__":
 
-    # Having the topic as a command line argument allows multiple video recorder nodes to exist on different topics
-    parser = argparse.ArgumentParser(
-        description='Record video from an image topic')
-    parser.add_argument('--image-topic', help='The image topic for the program to subscribe to',
-                        default="camera/color/image_raw")
-    parser.add_argument('--output-directory', help='Directory where videos should be saved to',
-                        default="/root/videos")
-    parser.add_argument('--frames-per-second', type=float, help='Number of frames per second sent from the image topic',
-                        default=30.0)
-    parser.add_argument('--is-record-topic', help='Topic that publishes if recordings should start or stop',
-                        default="video_capture/is_record")
-    parser.add_argument('--video-type', help='Format of the video to be saved',
-                        default="mp4")
-    parser.add_argument('--video-dimensions', help='Dimensions of the video to be saved',
-                        default="480p")
+    # Getting the instance_id for the parameters
+    parser = argparse.ArgumentParser(description='instance_id for video recording')
+    parser.add_argument('--instance_id', help='instance_id for parameters namespace', default="1")
     args, _ = parser.parse_known_args()
 
+    # Getting the values as params
+    image_topic = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/default_param/image_topic", "camera/color/image_raw")
+    is_record_topic = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/default_param/is_record_topic", "video_capture/is_record")
+    output_directory = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/default_param/output_directory", "/root/videos")
+
+    frames_per_second = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/cam_settings/frames_per_second")
+    video_type = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/cam_settings/video_type")
+    video_dimensions = rospy.get_param("/data_capture/"+args.instance_id+"/video_capture/cam_settings/video_dimensions")
+
+    is_memory_usage_exceeded_topic = rospy.get_param("/data_capture/"+args.instance_id+"/is_high_memory_usage_topic")
+
     VideoCapture(
-        image_topic=args.image_topic,
-        is_record_topic=args.is_record_topic,
-        is_memory_usage_exceeded_topic=rospy.get_param(
-            "data_capture/is_high_memory_usage_topic"),
-        video_type=args.video_type,
-        video_dimensions=args.video_dimensions,
-        frames_per_second=args.frames_per_second,
-        out_directory=args.output_directory,
+        image_topic=image_topic,
+        is_record_topic=is_record_topic,
+        is_memory_usage_exceeded_topic=is_memory_usage_exceeded_topic,
+        video_type=video_type,
+        video_dimensions=video_dimensions,
+        frames_per_second=float(frames_per_second),
+        out_directory=output_directory,
     )
 
     rospy.spin()
