@@ -11,7 +11,7 @@
         </include>
     </group>
 
-    <rosparam file="$(find audio_capture)/config/configuration.yaml" ns="/data_capture/$(arg instance_id)/" subst_value="True"/>
+    <rosparam file="$(find audio_capture2)/config/configuration.yaml" ns="/data_capture/$(arg instance_id)/" subst_value="True"/>
 
     <node pkg="audio_capture2" type="capture.py" name="$(anon audio_capture)_$(arg instance_id)" output="screen"
         args="
