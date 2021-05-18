@@ -1,10 +1,6 @@
 # Configuration file for the audio capture
 audio_capture:
-  #is_record_topic: "data_capture/is_record" ##These are configured from vision_project.launch
-  #audio_topic: "audio/audio"
-  #output_directory: "/root/audio"
   num_channels: 1
   chunk_size: 1024
   sample_rate: 16000
   format_type: "wave"
-  file_name_prefix: "''"
