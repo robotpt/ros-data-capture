@@ -2,11 +2,13 @@
 
     <arg name="is_launch_audio_capture" default="true"/>
     <arg name="device" default=""/>
+    <arg name="format" default="wave"/>
     <arg name="instance_id" default="1"/>
 
     <group if="$(eval is_launch_audio_capture)">
         <include file="$(find audio_capture)/launch/capture.launch">
             <arg name="device" default="$(arg device)"/>
+            <arg name="format" default="$(arg format)"/>
             <arg name="ns" default="audio"/>
         </include>
     </group>
