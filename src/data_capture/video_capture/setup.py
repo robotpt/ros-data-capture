@@ -6,7 +6,7 @@ import os
 
 # fetch values from package.xml
 setup_args = generate_distutils_setup(
-    packages=['video_recorder'],
+    packages=['video_recorder', 'image_capture'],
     package_dir={'': 'src'}
 )
 

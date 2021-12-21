@@ -1,0 +1,5 @@
+<launch>
+
+    <node pkg="video_capture" type="image_publisher.py" name="image_publisher" output="screen" respawn="true"/>
+
+</launch>

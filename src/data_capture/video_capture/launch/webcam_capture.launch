@@ -1,0 +1,12 @@
+<launch>
+
+    <arg name="instance_id" default="1"/>
+
+    <rosparam file="$(find video_capture)/config/webcam_config.yaml" ns="/data_capture/$(arg instance_id)/" subst_value="True"/>
+
+    <include file="$(find video_capture)/launch/image_publisher.launch"></include>
+    <node pkg="video_capture" type="image_writer.py" name="image_writer_$(arg instance_id)" output="screen" respawn="true"
+        args="--instance_id $(arg instance_id)"
+    />
+
+</launch>
