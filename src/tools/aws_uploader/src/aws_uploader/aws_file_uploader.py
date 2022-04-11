@@ -18,7 +18,7 @@ class AwsFileUploader:
             self,
             region,
             default_bucket=None,
-            seconds_delay_to_check_if_file_is_being_written=0.1,
+            seconds_delay_to_check_if_file_is_being_written=2.0
     ):
 
         self._default_region = region
